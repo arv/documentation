@@ -32,7 +32,10 @@ module.exports = function (comments, options, callback) {
       shortSignature: function (section) {
         var prefix = '';
         if (section.kind === 'class') {
-          prefix = 'new ';
+          return section +
+            (section.augments ? ` extends ${section.augments}` : '') + ' {}';
+        } else if (section.kind === 'typedef') {
+          return `type ${section.name}`;
         } else if (section.kind !== 'function') {
           return section.name;
         }
@@ -40,15 +43,45 @@ module.exports = function (comments, options, callback) {
       },
       signature: function (section) {
         var returns = '';
-        var prefix = '';
         if (section.kind === 'class') {
-          prefix = 'new ';
-        } else if (section.kind !== 'function') {
+          return `class ${section.name}` +
+            (section.augments ? ` extends ${
+              section.augments.map(a => formatters.autolink(a.name))
+            }` : '') + ' {}';
+        }
+        if (section.kind === 'typedef') {
+          return `type ${section.name} = ${formatters.type(section.type)}`;
+        }
+        if (section.kind === 'member') {
+          // if (section.name === 'isMeta') {
+          //   console.log(JSON.stringify(section, null, 2));
+          // }
+
+          if (section.returns) {  // getter
+            return `get ${section.name}(): ${formatters.type(section.returns[0].type)}`;
+          }
+
+          return `${section.name}: = ${formatters.type(section.type)}`;
+        }
+        // if (section.kind === 'get') {
+        //   return `get ${section.name}(): ${formatters.type(section.returnType)}`;
+        // }
+
+
+        if (section.kind === 'constant') {
+          var type = section.type ? `: ${formatters.type(section.type)}` : '';
+          return `const ${section.name}${type}`;
+        }
+        if (section.kind !== 'function') {
           return section.name;
         }
         if (section.returns) {
           returns = ': ' +
             formatters.type(section.returns[0].type);
+        }
+        var prefix = '';
+        if (!section.memberof) {
+          prefix = 'function ';
         }
         return prefix + section.name + formatters.parameters(section) + returns;
       },
@@ -68,10 +101,17 @@ module.exports = function (comments, options, callback) {
           return hljs.highlightAuto(example).value;
         }
         return hljs.highlight('js', example).value;
+      },
+      fixKind(kind) {
+        switch (kind) {
+        case 'typedef':
+          return 'type';
+        }
+        return kind;
       }
     }
   };
-  
+
   sharedImports.imports.renderSectionList =  _.template(fs.readFileSync(path.join(__dirname, 'section_list._'), 'utf8'), sharedImports);
   sharedImports.imports.renderSection = _.template(fs.readFileSync(path.join(__dirname, 'section._'), 'utf8'), sharedImports);
   sharedImports.imports.renderNote = _.template(fs.readFileSync(path.join(__dirname, 'note._'), 'utf8'), sharedImports);

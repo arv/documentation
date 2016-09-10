@@ -134,3 +134,11 @@ table {
 .minishadow {
   box-shadow: 2px 2px 10px #f3f3f3;
 }
+
+p {
+  margin: .5rem 0;
+}
+
+.pointer {
+  cursor: pointer;
+}

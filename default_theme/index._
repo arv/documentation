@@ -34,37 +34,23 @@
                 <div class='toggle-target display-none'>
                   <% if (doc.members.static && doc.members.static.length) { %>
                   <ul class='list-reset py1-ul pl1'>
-                    <li class='h5'><span>Static members</span></li>
                     <% doc.members.static.forEach(function(member) { %>
-                      <li><a
+                      <li>static <a
                         href='#<%=member.namespace%>'
                         class='regular pre-open'>
-                        .<%- member.name %>
+                        <%- member.name %>
                       </a></li>
                     <% }) %>
                     </ul>
                   <% } %>
                   <% if (doc.members.instance && doc.members.instance.length) { %>
                     <ul class='list-reset py1-ul pl1'>
-                      <li class='h5'><span>Instance members</span></li>
                       <% doc.members.instance.forEach(function(member) { %>
                       <li><a
                         href='#<%=member.namespace%>'
                         class='regular pre-open'>
-                        #<%- member.name %>
+                        <%- member.name %>
                       </a></li>
-                      <% }) %>
-                    </ul>
-                  <% } %>
-                  <% if (doc.members.events && doc.members.events.length) { %>
-                    <ul class='list-reset py1-ul pl1'>
-                      <li class='h5'>Events</li>
-                      <% doc.members.events.forEach(function(member) { %>
-                        <li><a
-                          href='#<%=member.namespace%>'
-                          class='regular pre-open'>
-                          ⓔ <%- member.name %>
-                        </a></li>
                       <% }) %>
                     </ul>
                   <% } %>
